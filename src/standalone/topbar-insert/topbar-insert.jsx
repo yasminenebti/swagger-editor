@@ -10,6 +10,7 @@ import { externalDocumentationForm, externalDocumentationObject } from "./forms/
 import { addOperationTagsForm, addOperationTagsObject } from "./forms/form-objects/add-operation-tags"
 import { exampleForm, exampleObject } from "./forms/form-objects/example-value-object"
 import { selectOperationObject } from "./forms/form-objects/select-operation"
+import { schemaForm, schemaObject } from "./forms/form-objects/components/component-schema"
 
 export default class TopbarInsert extends Component {
   constructor(props) {
@@ -22,7 +23,8 @@ export default class TopbarInsert extends Component {
       showAddExternalDocsModal: false,
       showAddTagsModal: false,
       showAddServersModal: false,
-      showAddOperationTagsModal: false
+      showAddOperationTagsModal: false,
+      showAddSchemaComponentModal: false
     }
 
     this.openModalClick = this.openModalClick.bind(this)
@@ -38,6 +40,7 @@ export default class TopbarInsert extends Component {
     this.getResponses = this.getResponses.bind(this)
     this.getMediaTypes = this.getMediaTypes.bind(this)
     this.addExampleResponse = this.addExampleResponse.bind(this)
+    this.updateSchemaComponent = this.updateSchemaComponent.bind(this)
   }
 
   openModalClick = showModalProperty => () => {
@@ -63,7 +66,7 @@ export default class TopbarInsert extends Component {
 
   updateInfo = (formData) => {
     this.props.specActions.addToSpec([], infoObject(formData), "info")
-  } 
+  }
 
   getPaths = () => this.props.specSelectors.paths() ? Object.keys(this.props.specSelectors.paths().toJS()) : null
 
@@ -73,7 +76,7 @@ export default class TopbarInsert extends Component {
     this.props.specActions.addToSpec(operationTagsObject.selectedOperation, operationTagsObject.tags, null)
   }
 
-  getOperations = (path) => 
+  getOperations = (path) =>
     path ? this.props.specSelectors.operations().toJS()
       .filter(item => item.path === path)
       .map(item => item.method) :
@@ -113,11 +116,11 @@ export default class TopbarInsert extends Component {
 
   getMediaTypes = (response, formData) => {
     const defaultOptions = [
-      "application/json", 
-      "text/plain; charset=utf-8", 
+      "application/json",
+      "text/plain; charset=utf-8",
       "application/xml" ]
 
-    if (!formData) {  
+    if (!formData) {
       return defaultOptions
     }
 
@@ -146,6 +149,13 @@ export default class TopbarInsert extends Component {
     this.props.specActions.addToSpec(formObject.responsePath, { value: formObject.exampleValue }, formObject.exampleName)
   }
 
+  updateSchemaComponent = (formData) => {
+    console.log("Form Data received:", formData);
+    const schemaFormObject = schemaObject(formData)
+    this.props.specActions.addToSpec(["components", "schemas"], schemaFormObject.value, schemaFormObject.key)
+
+  }
+
   render() {
     let { specSelectors, getComponent } = this.props
 
@@ -165,23 +175,23 @@ export default class TopbarInsert extends Component {
             title="Add Path"
             onCloseClick={this.closeModalClick("showAddPathModal")}
           >
-            <AddForm 
-              {...this.props} 
-              submit={this.closeModalClick("showAddPathModal")} 
-              submitButtonText="Add Path" 
-              getFormData={pathForm} 
-              updateSpecJson={this.updatePath} 
+            <AddForm
+              {...this.props}
+              submit={this.closeModalClick("showAddPathModal")}
+              submitButtonText="Add Path"
+              getFormData={pathForm}
+              updateSpecJson={this.updatePath}
             />
           </Modal>
         }
-        { this.state.showAddOperationModal && 
+        { this.state.showAddOperationModal &&
         <Modal
           title="Add Operation to Document"
           onCloseClick={this.closeModalClick("showAddOperationModal")}
         >
-          <AddForm 
-            {...this.props} 
-            submit={this.closeModalClick("showAddOperationModal")} 
+          <AddForm
+            {...this.props}
+            submit={this.closeModalClick("showAddOperationModal")}
             submitButtonText="Add Operation"
             getFormData={operationForm}
             updateSpecJson={this.updateOperation}
@@ -194,9 +204,9 @@ export default class TopbarInsert extends Component {
             title="Add Info to Document"
             onCloseClick={this.closeModalClick("showAddInfoModal")}
           >
-            <AddForm 
-              {...this.props} 
-              submit={this.closeModalClick("showAddInfoModal")} 
+            <AddForm
+              {...this.props}
+              submit={this.closeModalClick("showAddInfoModal")}
               submitButtonText="Add Info"
               getFormData={infoForm}
               updateSpecJson={this.updateInfo}
@@ -209,9 +219,9 @@ export default class TopbarInsert extends Component {
             title="Add External Documentation"
             onCloseClick={this.closeModalClick("showAddExternalDocsModal")}
           >
-            <AddForm 
-              {...this.props} 
-              submit={this.closeModalClick("showAddExternalDocsModal")} 
+            <AddForm
+              {...this.props}
+              submit={this.closeModalClick("showAddExternalDocsModal")}
               submitButtonText="Add External Documentation"
               getFormData={externalDocumentationForm}
               updateSpecJson={this.updateExternalDocs}
@@ -224,8 +234,8 @@ export default class TopbarInsert extends Component {
             onCloseClick={this.closeModalClick("showAddTagsModal")}
           >
             <AddForm
-              {...this.props} 
-              submit={this.closeModalClick("showAddTagsModal")} 
+              {...this.props}
+              submit={this.closeModalClick("showAddTagsModal")}
               submitButtonText="Add Tag Declarations"
               getFormData={tagsForm}
               updateSpecJson={this.updateTags}
@@ -237,16 +247,16 @@ export default class TopbarInsert extends Component {
             title="Add Servers"
             onCloseClick={this.closeModalClick("showAddServersModal")}
           >
-            <AddForm 
-              {...this.props} 
-              submit={this.closeModalClick("showAddServersModal")} 
+            <AddForm
+              {...this.props}
+              submit={this.closeModalClick("showAddServersModal")}
               submitButtonText="Add Servers"
               getFormData={serversForm}
-              updateSpecJson={this.updateServers}            
+              updateSpecJson={this.updateServers}
             />
           </Modal>
         }
-        { this.state.showAddOperationTagsModal && 
+        { this.state.showAddOperationTagsModal &&
           <Modal
             title="Add Tags To Operation"
             onCloseClick={this.closeModalClick("showAddOperationTagsModal")}
@@ -263,7 +273,7 @@ export default class TopbarInsert extends Component {
             />
           </Modal>
         }
-        { this.state.showAddExampleModal && 
+        { this.state.showAddExampleModal &&
           <Modal
             title="Add Example Response"
             description="An example response sent from the API."
@@ -281,8 +291,23 @@ export default class TopbarInsert extends Component {
           </Modal>
         }
 
+        {this.state.showAddSchemaComponentModal &&
+          <Modal
+            title="Add Schema Definition"
+            onCloseClick={this.closeModalClick("showAddSchemaComponentModal")}
+          >
+            <AddForm
+              {...this.props}
+              submit={this.closeModalClick("showAddSchemaComponentModal")}
+              submitButtonText="Add Schema"
+              getFormData={schemaForm}
+              updateSpecJson={this.updateSchemaComponent}
+            />
+          </Modal>
+        }
+
         <Dropdown displayName="Insert" >
-          <DropdownItem onClick={this.openModalClick("showAddPathModal")} name="Add Path Item"/>    
+          <DropdownItem onClick={this.openModalClick("showAddPathModal")} name="Add Path Item"/>
           <DropdownItem onClick={this.openModalClick("showAddOperationModal")} name="Add Operation" />
           <DropdownItem onClick={this.openModalClick("showAddInfoModal")} name="Add Info" />
           <DropdownItem onClick={this.openModalClick("showAddExternalDocsModal")} name="Add External Documentation" />
@@ -290,6 +315,7 @@ export default class TopbarInsert extends Component {
           <DropdownItem onClick={this.openModalClick("showAddOperationTagsModal")} name="Add Tags To Operation" />
           <DropdownItem onClick={this.openModalClick("showAddServersModal")} name="Add Servers" />
           <DropdownItem onClick={this.openModalClick("showAddExampleModal")} name="Add Example Response" />
+          <DropdownItem onClick={this.openModalClick("showAddSchemaComponentModal")} name="Add Schema Component" />
         </Dropdown>
       </div>
     )
