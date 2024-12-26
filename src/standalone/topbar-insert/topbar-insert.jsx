@@ -11,6 +11,10 @@ import { addOperationTagsForm, addOperationTagsObject } from "./forms/form-objec
 import { exampleForm, exampleObject } from "./forms/form-objects/example-value-object"
 import { selectOperationObject } from "./forms/form-objects/select-operation"
 import { schemaForm, schemaObject } from "./forms/form-objects/components/component-schema"
+import {
+  updateSchemaPropertiesForm,
+  updateSchemaPropertiesObject,
+} from "./forms/form-objects/components/add-schema-propertyItem"
 
 export default class TopbarInsert extends Component {
   constructor(props) {
@@ -24,7 +28,8 @@ export default class TopbarInsert extends Component {
       showAddTagsModal: false,
       showAddServersModal: false,
       showAddOperationTagsModal: false,
-      showAddSchemaComponentModal: false
+      showAddSchemaComponentModal: false,
+      showUpdateSchemaPropertiesModal: false
     }
 
     this.openModalClick = this.openModalClick.bind(this)
@@ -154,6 +159,10 @@ export default class TopbarInsert extends Component {
     const schemaFormObject = schemaObject(formData)
     this.props.specActions.addToSpec(["components", "schemas"], schemaFormObject.value, schemaFormObject.key)
 
+  }
+  updateSchemaProperties = (formData) => {
+    const schemaObj = updateSchemaPropertiesObject(formData, this.props.specSelectors.specJson())
+    this.props.specActions.addToSpec(["components", "schemas"], schemaObj.value, schemaObj.key)
   }
 
   render() {
@@ -306,6 +315,22 @@ export default class TopbarInsert extends Component {
           </Modal>
         }
 
+        {this.state.showUpdateSchemaPropertiesModal &&
+          <Modal
+            title="Update Schema Properties"
+            onCloseClick={this.closeModalClick("showUpdateSchemaPropertiesModal")}
+          >
+            <AddForm
+              {...this.props}
+              submit={this.closeModalClick("showUpdateSchemaPropertiesModal")}
+              submitButtonText="Add Properties"
+              getFormData={updateSchemaPropertiesForm}
+              updateSpecJson={this.updateSchemaProperties}
+              existingData={this.props.specSelectors.specJson()}
+            />
+          </Modal>
+        }
+
         <Dropdown displayName="Insert" >
           <DropdownItem onClick={this.openModalClick("showAddPathModal")} name="Add Path Item"/>
           <DropdownItem onClick={this.openModalClick("showAddOperationModal")} name="Add Operation" />
@@ -316,6 +341,7 @@ export default class TopbarInsert extends Component {
           <DropdownItem onClick={this.openModalClick("showAddServersModal")} name="Add Servers" />
           <DropdownItem onClick={this.openModalClick("showAddExampleModal")} name="Add Example Response" />
           <DropdownItem onClick={this.openModalClick("showAddSchemaComponentModal")} name="Add Schema Component" />
+          <DropdownItem onClick={this.openModalClick("showUpdateSchemaPropertiesModal")} name="Update Schema Properties" />
         </Dropdown>
       </div>
     )

@@ -19,7 +19,7 @@ export const schemaForm = (updateForm, path) => fromJS({
 })
 
 
-const propertyItem = (updateForm, path) => fromJS({
+export const propertyItem = (updateForm, path) => fromJS({
   name: {
     value: "",
     isRequired: true,
