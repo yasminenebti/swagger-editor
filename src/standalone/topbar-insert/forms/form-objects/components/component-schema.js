@@ -1,5 +1,7 @@
 import { fromJS } from "immutable"
 
+const ComponentFixedFieldRegex = "^[a-zA-Z0-9._-]+$"
+
 export const schemaForm = (updateForm, path) => fromJS({
   name: {
     value: "",
@@ -7,7 +9,8 @@ export const schemaForm = (updateForm, path) => fromJS({
     name: "Schema Name",
     description: "Name of the schema definition",
     updateForm:event => updateForm(event, path.concat(["name"])),
-    validationMessage: "Please make sure to be a capitalized Schema .",
+    validationMessage: "Schema name must contain only letters, numbers, dots, and hyphens.",
+    isValid: value => new RegExp(ComponentFixedFieldRegex).test(value)
   },
   properties: {
     value: [],
@@ -32,7 +35,7 @@ export const propertyItem = (updateForm, path) => fromJS({
     isRequired: true,
     name: "Type",
     description: "Data type of the property",
-    options: ["string", "number", "integer", "boolean", "array", "object"],
+    options: ["string", "number", "integer", "boolean", "array"],
     updateForm: event => updateForm(event, path.concat(["type"]))
   },
   format: {
@@ -75,6 +78,12 @@ export const schemaObject = (formData) => {
         type: prop.getIn(["type", "value"])
       }
 
+      if (property.type === "array") {
+        property.items = {
+          type: prop.getIn(["items", "value"])
+        }
+      }
+
       if (prop.getIn(["format", "value"])) {
         property.format = prop.getIn(["format", "value"])
       }
@@ -104,6 +113,7 @@ export const schemaObject = (formData) => {
           .map(v => v.trim())
           .filter(v => v.length > 0)
       }
+
       properties[propertyName] = property
     })
   }

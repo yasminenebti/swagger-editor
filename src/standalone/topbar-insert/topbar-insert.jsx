@@ -341,7 +341,7 @@ export default class TopbarInsert extends Component {
           <DropdownItem onClick={this.openModalClick("showAddServersModal")} name="Add Servers" />
           <DropdownItem onClick={this.openModalClick("showAddExampleModal")} name="Add Example Response" />
           <DropdownItem onClick={this.openModalClick("showAddSchemaComponentModal")} name="Add Schema Component" />
-          <DropdownItem onClick={this.openModalClick("showUpdateSchemaPropertiesModal")} name="Update Schema Properties" />
+          <DropdownItem onClick={this.openModalClick("showUpdateSchemaPropertiesModal")} name="Add Schema Properties" />
         </Dropdown>
       </div>
     )
